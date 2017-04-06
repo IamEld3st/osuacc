@@ -14,6 +14,8 @@ $('#btnUpdate').on('click', function () {
 				console.log("Got response!");
 				document.getElementById('resultTable').innerHTML = "<tr><th>Slot</th><th>Score</th><th>Accuracy</th><th>300s</th><th>100s</th><th>50s</th><th>Miss</th><th>Status</th></tr>";
 				lastGame = response.games[response.games.length-1];
+				console.log(response);
+				document.getElementById('matchName').innerHTML = response.match.name;
 				document.getElementById('latestMap').innerHTML = lastGame.beatmap_id;
 				lastGame.scores.forEach(function(item){
 					var passed;
