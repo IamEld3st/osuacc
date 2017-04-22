@@ -1,5 +1,6 @@
 var apiKEY,
 	matchID,
+	previousMID,
 	results = {};
 
 $('#btnUpdate').on('click', function () {
@@ -9,6 +10,10 @@ $('#btnUpdate').on('click', function () {
 	matchID = $('#matchID').val();
 	console.log("Set values apiKEY: "+apiKEY+" | matchID: "+matchID);
 	if (apiKEY != "") {
+		if (previousMID != matchID) {
+			results = {};
+		}
+		Object.keys(results).forEach(function(key, index) { results[key].accuracyList = []; });
 		console.log("Trying to request info from API");
 		$.get('https://osu.ppy.sh/api/get_match', { k: apiKEY, mp: matchID })
 			.done(function(response){
@@ -23,7 +28,6 @@ $('#btnUpdate').on('click', function () {
 								console.log("Player isn't in results... Adding to results...");
 								results[item.user_id] = {username: "", accuracyList: []};
 							}
-							results[item.user_id].accuracyList = [];
 							var passed;
 							if (item.pass == "1") {
 								passed = "PASSED";
@@ -48,8 +52,13 @@ $('#btnUpdate').on('click', function () {
 						console.log("Getting username for user_id "+key);
 						$.get('https://osu.ppy.sh/api/get_user', { k: apiKEY, u: key, m: 0, type: "id"})
 							.done(function(response){
-								console.log("Got username "+response[0].username);
-								results[key].username = response[0].username;
+								if (response.length != 0) {
+									console.log("Got username "+response[0].username);
+									results[key].username = response[0].username;
+								}else{
+									results[key].username = "ID: "+key;
+								}
+								
 							});
 					}
 				});
@@ -72,6 +81,7 @@ $('#btnUpdate').on('click', function () {
 						$("span.user"+key).append(results[key].username);
 					});
 				});
+				previousMID = matchID;
 				console.log(results);
 			});
 	}
